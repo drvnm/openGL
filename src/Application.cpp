@@ -7,12 +7,16 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "Texture.h"
+#include <vector>
 int main()
 {
     GLFWwindow* window;
 
     /* Initialize the library */
+
     if (!glfwInit())
+
         return -1;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // zet major opengl version naar 3
@@ -40,10 +44,10 @@ int main()
 
     //vertex data
     float positions[] = {
-       -0.5f, -0.5f, //links onder
-        0.5f, -0.5f, //rechts onder
-        0.5f,  0.5f, //rechts boven
-       -0.5f,  0.5f  //links boven
+       -0.5f, -0.5f, 0.0f, 0.0f, //links onder
+        0.5f, -0.5f, 1.0f, 0.0f, //rechts onder
+        0.5f,  0.5f, 1.0f, 1.0f,//rechts boven
+       -0.5f,  0.5f, 0.0f, 1.0f//links boven
         
     };
     unsigned int indices[] = {
@@ -52,32 +56,37 @@ int main()
     };
 
 
-
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
     //vertex array
     VertexArray va;
     //Vertex Buffer
-    VertexBuffer vb(positions, 4 * 2 * sizeof(float)); 
+    VertexBuffer vb(positions, 4 * 4 * sizeof(float)); 
     VertexBufferLayout layout; 
 
     layout.Push<float>(2); 
+    layout.Push<float>(2);
 
     va.AddBuffer(vb, layout);
     IndexBuffer ib(indices, 6);
     //Index buffer
-   
+
     Shader myShader("res/shaders/vertex.shader", "res/shaders/fragment.shader");
-    myShader.use(); 
 
-    
-
+    Renderer renderer;
+    Texture texture("res/textures/hp.png");
+    texture.Bind();
+    myShader.setUniform1i("u_Texture", 0);
     while (!glfwWindowShouldClose(window))
     {
-        va.Bind(); 
+
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.Clear(); 
+        myShader.use();
+        myShader.setUniform4f("u_Color", 1.0f, 0.6f, 0.3f, 1.0f);
         
-     
-        glCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));   /* Swap front and back buffers */
+        renderer.Draw(va, ib, myShader);
+       
        
         glfwSwapBuffers(window);
 

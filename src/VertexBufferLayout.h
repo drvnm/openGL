@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
 #include <GL/glew.h>
-#include "Renderer.h"
+
+
 struct VertexBufferElement
 {
 	unsigned int type;
@@ -16,7 +17,7 @@ struct VertexBufferElement
 			case GL_UNSIGNED_INT:	return 4;
 			case GL_UNSIGNED_BYTE:	return 1;
 		}
-		ASSERT(false); 
+	
 		return 0; 
 	}
 
@@ -38,7 +39,7 @@ public:
 	template<>
 	void Push<float>(unsigned int count)
 	{
-		m_Elements.push_back({ GL_FLOAT, count,GL_FALSE }); //type, count en normilized
+		m_Elements.push_back({ GL_FLOAT, count,GL_FALSE }); //type, count en normilized en push de VertexBufferElement in m_elements
 		m_Stride += count * VertexBufferElement::GetSizeOfType(GL_FLOAT);
 	}
 	template<>
